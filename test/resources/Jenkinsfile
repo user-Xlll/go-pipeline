@@ -1,0 +1,9 @@
+@Library('go-pipeline@main') _
+
+gopipeline {
+  tagToVersion 'v(?<version>.+)': '$version-$GIT_COMMIT'
+  branchToVersion 'release/(?<version>.+)': '$version-$GIT_COMMIT'
+
+  useBuildkit false
+  serviceNameRegexp '.+'
+}

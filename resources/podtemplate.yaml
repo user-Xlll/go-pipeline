@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+    - name: jnlp
+      image: jenkins/inbound-agent:alpine-jdk21
+      tty: true
+    - name: buildkit
+      image: moby/buildkit:v0.16.0-rootless
+      imagePullPolicy: IfNotPresent
+      command:
+        - rootlesskit
+        - buildkitd
+        - --addr
+        - tcp://0.0.0.0:1234
+      securityContext:
+        runAsUser: 1000
+      tty: true
+    - name: podman
+      image: quay.io/podman/stable:v5.4
+      imagePullPolicy: IfNotPresent
+      env:
+        - name: CONTAINER_HOST
+          value: tcp://127.0.0.1:8888
+      command:
+        - sleep
+      args:
+        - infinity
+      tty: true
+    - name: podman-service
+      image: quay.io/podman/stable:v5.4
+      imagePullPolicy: IfNotPresent
+      command:
+        - podman
+        - system
+        - service
+        - --time=0
+        - tcp://0.0.0.0:8888
+      securityContext:
+        privileged: true
+    - name: go
+      image: golang:1.26-alpine
+      imagePullPolicy: IfNotPresent
+      env:
+        - name: HOME
+          value: /tmp/jenkins-home
+        - name: GOPATH
+          value: /tmp/jenkins-home/go
+        - name: GOCACHE
+          value: /tmp/jenkins-home/.cache/go-build
+        - name: DOCKER_HOST
+          value: tcp://127.0.0.1:8888
+        - name: PATH
+          value: /tmp/jenkins-home/go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      command:
+        - sleep
+      args:
+        - infinity
+      securityContext:
+        runAsUser: 1000
+      resources:
+        requests:
+          cpu: 2
+          memory: 2048Mi
+    - name: node
+      image: node:22-bookworm-slim
+      imagePullPolicy: IfNotPresent
+      command:
+        - sleep
+      args:
+        - infinity
+      tty: true

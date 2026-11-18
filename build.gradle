@@ -1,0 +1,87 @@
+plugins {
+    id 'groovy'
+}
+
+
+group = 'com.github.userxlll.gopipeline'
+version = '2.0.0'
+
+
+repositories {
+    mavenCentral()
+    maven {
+        url = uri('https://repo.jenkins-ci.org/public/')
+    }
+}
+
+sourceSets {
+  main {
+        groovy {
+            srcDirs = ['src','vars']
+        }
+        resources {
+            srcDirs = ['resources']
+        }
+    }
+    test {
+        groovy {
+             srcDirs = ['test']
+        }
+    }
+}
+
+dependencies {
+    implementation 'org.codehaus.groovy:groovy-all:3.0.25'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.13.4'
+    testCompileOnly 'junit:junit:4.13.2'
+    testRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.13.4'
+    testImplementation 'com.lesfurets:jenkins-pipeline-unit:1.26'
+
+    implementation('org.jenkinsci.plugins:pipeline-model-definition:2.2221.vc657003fb_d93') {
+            artifact {
+                extension = 'jar'
+            }
+        }
+
+implementation("org.jenkins-ci.plugins.workflow:workflow-api:1398.v67030756d3fb_") {
+                artifact {
+                extension = 'jar'
+            }
+}
+
+implementation("org.jenkins-ci.plugins.workflow:workflow-cps:4238.va_6fb_65c1f699"){
+                artifact {
+                extension = 'jar'
+            }
+}
+
+
+
+implementation("org.jenkins-ci.plugins:pipeline-input-step:534.v352f0a_e98918"){
+                artifact {
+                extension = 'jar'
+            }
+}
+
+ 
+
+// https://mvnrepository.com/artifact/org.jenkins-ci.main/jenkins-core
+implementation("org.jenkins-ci.main:jenkins-core:2.530"){
+                artifact {
+                extension = 'jar'
+            }
+}
+
+
+}
+
+test {
+    useJUnitPlatform()
+
+    maxHeapSize = '1G'
+
+    testLogging {
+        events "passed", "failed", "STANDARD_ERROR","STANDARD_OUT"
+    }
+}
+
